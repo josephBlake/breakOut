@@ -128,6 +128,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         addChild(brick)
     }
     
+    func createBlocks()
+    {
+        var xPosition = 10
+        var yPosition = 20
+        
+        let blockWidth = (Int)((frame.midX - 60)/5)
+        let blockHeight = 20
+        
+        for rows in 1...3
+        {
+            for columns in 1...5
+            {
+                let block = brick(frame: CGRect(x: xPosition, y: yPosition, width: blockWidth, height: blockHeight))
+                block.backgroundColor = UIColor.redColor()
+                view?.addSubview(block)
+                
+                blockArray.append(block)
+                allViewsArray.append(block)
+                
+                blockCount++
+                
+                xPosition += (blockWidth + 10)
+            }
+            xPosition = 10
+            yPosition += (blockHeight + 10)
+        }
+    }
+    
     func makeLoseZone()
     {
         let loseZone = SKSpriteNode(color: UIColor.red, size: CGSize(width: frame.width, height: 50))
