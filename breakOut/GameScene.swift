@@ -15,6 +15,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var paddle: SKSpriteNode!
     var brick: SKSpriteNode!
     var brickHit = 0
+    var blockCount = 0
+    var blocksArray = [25]
+    var allViewsArray = [25]
     
     override func didMove(to view: SKView)
     {
@@ -24,7 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         createBackground()
         makeBall()
         makePaddle()
-        makeBrick()
+        createBlocks()
         makeLoseZone()
         ball.physicsBody?.applyImpulse(CGVector(dx: 5, dy: 5))// Puts ball in motion
     }
@@ -118,10 +121,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         addChild(paddle)
     }
     
-    func makeBrick()
+    func makeBrick(xPoint: Int, yPoint: Int, brickWidth: Int, brickHeight: Int)
     {
-        brick = SKSpriteNode(color: UIColor.yellow, size: CGSize(width: frame.width/4, height: frame.height/25))
-        brick.position = CGPoint(x: frame.midX, y: frame.maxY - 30)
+        brick = SKSpriteNode(color: UIColor.yellow, size: CGSize(width: brickWidth, height: brickHeight))
+        brick.position = CGPoint(x: xPoint, y: yPoint)
         brick.name = "brick"
         brick.physicsBody = SKPhysicsBody(rectangleOf: brick.size)
         brick.physicsBody?.isDynamic = false
@@ -130,31 +133,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func createBlocks()
     {
-        var xPosition = 10
-        var yPosition = 20
+        var xPosition = Int(frame.midX - (frame.width / 2.5))
+        var yPosition = 150
         
-        let blockWidth = (Int)((frame.midX - 60)/5)
+        let blockWidth = (Int)((frame.width - 60)/5)
         let blockHeight = 20
         
         for rows in 1...3
         {
             for columns in 1...5
             {
-                let block = brick(frame: CGRect(x: xPosition, y: yPosition, width: blockWidth, height: blockHeight))
-                block.backgroundColor = UIColor.redColor()
-                view?.addSubview(block)
-                
-                blockArray.append(block)
-                allViewsArray.append(block)
-                
-                blockCount++
-                
+                makeBrick(xPoint: xPosition, yPoint: yPosition, brickWidth: blockWidth, brickHeight: blockHeight)
                 xPosition += (blockWidth + 10)
             }
-            xPosition = 10
+            xPosition = Int(frame.midX - (frame.width / 2.5))
             yPosition += (blockHeight + 10)
         }
     }
+    
     
     func makeLoseZone()
     {
