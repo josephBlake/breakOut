@@ -14,7 +14,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var ball: SKSpriteNode!
     var paddle: SKSpriteNode!
     var brick: SKSpriteNode!
-    var brickHit = 0
     var blockCount = 0
     var blocksArray = [25]
     var allViewsArray = [25]
@@ -52,16 +51,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func didBegin(_ contact: SKPhysicsContact)
     {
-        if contact.bodyA.node?.name == "brick" || contact.bodyB.node?.name == "brick"
+        if contact.bodyA.node?.name == "brick"
         {
             print("brick hit")
-            brickHit += 1
-            
-            if brickHit == 3
-            {
-                brick.removeFromParent()
-                brickHit = 0
-            }
+            removeChildren(in: nodes(at: (contact.bodyA.node?.position)!))
+        }
+        else if contact.bodyB.node?.name == "brick"
+        {
+            print("brick hit")
+            removeChildren(in: nodes(at: (contact.bodyB.node?.position)!))
         }
         else if contact.bodyA.node?.name == "loseZone" || contact.bodyB.node?.name == "loseZone"
         {
@@ -101,7 +99,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         ball.physicsBody = SKPhysicsBody(rectangleOf: ball.size)
         ball.physicsBody?.isDynamic = true
         ball.physicsBody?.usesPreciseCollisionDetection = true
-        ball.physicsBody?.affectedByGravity = false
+        ball.physicsBody?.affectedByGravity = false 
         ball.physicsBody?.allowsRotation = false
         ball.physicsBody?.friction = 0
         ball.physicsBody?.restitution = 1
