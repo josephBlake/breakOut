@@ -17,6 +17,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var blockCount = 0
     var blocksArray = [25]
     var allViewsArray = [25]
+    var numberOfBlocks = 0
+    var numberOfLives = 3
+    var ballReset = true
     
     override func didMove(to view: SKView)
     {
@@ -28,7 +31,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         makePaddle()
         createBlocks()
         makeLoseZone()
-        ball.physicsBody?.applyImpulse(CGVector(dx: 5, dy: 5))// Puts ball in motion
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
@@ -37,6 +39,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         {
             let location = touch.location(in: self)
             paddle.position.x = location.x
+        }
+        if ballReset
+        {
+            ball.physicsBody?.applyImpulse(CGVector(dx: 5, dy: 5))// Puts ball in motion
+            ballReset = false
         }
     }
     
@@ -47,23 +54,52 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             let location = touch.location(in: self)
             paddle.position.x = location.x
         }
+        if ballReset
+        {
+            ball.physicsBody?.applyImpulse(CGVector(dx: 5, dy: 5))// Puts ball in motion
+            ballReset = false
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact)
     {
         if contact.bodyA.node?.name == "brick"
         {
-            print("brick hit")
-            removeChildren(in: nodes(at: (contact.bodyA.node?.position)!))
+            contact.bodyA.node?.removeFromParent()
+            numberOfBlocks = numberOfBlocks - 1
+            
+            if numberOfBlocks == 0
+            {
+                levelComplete()
+            }
         }
         else if contact.bodyB.node?.name == "brick"
         {
-            print("brick hit")
-            removeChildren(in: nodes(at: (contact.bodyB.node?.position)!))
+            contact.bodyB.node?.removeFromParent()
+            numberOfBlocks = numberOfBlocks - 1
+            
+            if numberOfBlocks == 0
+            {
+                levelComplete()
+            }
         }
-        else if contact.bodyA.node?.name == "loseZone" || contact.bodyB.node?.name == "loseZone"
+        else if contact.bodyA.node?.name == "loseZone"
         {
-            print("You Lose")
+            numberOfLives = numberOfLives - 1
+            
+            if numberOfBlocks == 0
+            {
+                youLose()
+            }
+        }
+        else if contact.bodyB.node?.name == "loseZone"
+        {
+            numberOfLives = numberOfLives - 1
+            
+            if numberOfBlocks == 0
+            {
+                youLose()
+            }
         }
     }
     
@@ -97,7 +133,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         ball.name = "ball"
         
         ball.physicsBody = SKPhysicsBody(rectangleOf: ball.size)
-        ball.physicsBody?.isDynamic = true
+        ball.physicsBody?.isDynamic = true // needs to be made true at the start of the game
         ball.physicsBody?.usesPreciseCollisionDetection = true
         ball.physicsBody?.affectedByGravity = false 
         ball.physicsBody?.allowsRotation = false
@@ -142,13 +178,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             for columns in 1...5
             {
                 makeBrick(xPoint: xPosition, yPoint: yPosition, brickWidth: blockWidth, brickHeight: blockHeight)
+                numberOfBlocks = numberOfBlocks + 1
                 xPosition += (blockWidth + 10)
             }
             xPosition = Int(frame.midX - (frame.width / 2.5))
             yPosition += (blockHeight + 10)
         }
     }
-    
     
     func makeLoseZone()
     {
@@ -158,5 +194,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         loseZone.physicsBody = SKPhysicsBody(rectangleOf: loseZone.size)
         loseZone.physicsBody?.isDynamic = false
         addChild(loseZone)
+    }
+    
+    func levelComplete()
+    {
+        // Displays Alert Controller
+        //let alert = UIAlertController(title:"Level is complete", message: nil, preferredStyle: UIAlertControllerStyle.alert)
+        //let nextLevel = UIAlertAction(title: "Next Level", style: .default, handler: {(sender) in
+            //for labels in self.labelsArray// Make the next level's brick formation in this area
+            //{                             //
+                //labels.text = ""          //
+                //labels.canTap = true      //
+            //}                             //
+            //self.myGrid.xTurn = true      //
+            //self.myGrid.count = 0         //
+        //})
+        //alert.addAction(nextLevel)
+        //present(alert, animated: true, completion: nil)
+    }
+    
+    func youLose()
+    {
+        
     }
 }
